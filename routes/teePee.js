@@ -36,6 +36,7 @@ router.post('/', async (req, res) => {
 
 // PUT - update a whole property by id
 router.put('/:id', async (req, res) => {
+  console.log(".........",res.body);
   try {
     const updated = await Property.findByIdAndUpdate(
       req.params.id,

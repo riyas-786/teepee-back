@@ -4,6 +4,7 @@ const roomSchema = new mongoose.Schema({
   no: Number,
   status: { type: String, default: 'vacant' },
   remark: String,
+  note:String,
 });
 
 const buildingSchema = new mongoose.Schema({
