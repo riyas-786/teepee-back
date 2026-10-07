@@ -5,12 +5,14 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const teePeeRouter = require('./routes/teePee');
+const blueBellsRouter = require('./routes/blueBells');
 
 const app = express();
 
 app.use(cors());
 app.use(express.json());
-app.use('/api/teepee', teePeeRouter);
+app.use('/teepee', teePeeRouter);
+app.use('/blueBells',blueBellsRouter);
 
 mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log('Connected to MongoDB...'))
