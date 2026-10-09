@@ -1,11 +1,11 @@
 const express = require('express');
 const router = express.Router();
-const Property = require('../models/Property');
+const TeePeeBuilding = require('../models/TeePeeBuilding');
 
 // GET all
 router.get('/', async (req, res) => {
   try {
-    const properties = await Property.find();
+    const properties = await TeePeeBuilding.find();
     res.send(properties);
   } catch (err) {
     res.status(500).send('Error fetching properties: ' + err.message);
@@ -15,7 +15,7 @@ router.get('/', async (req, res) => {
 // GET one by id
 router.get('/:id', async (req, res) => {
   try {
-    const property = await Property.findById(req.params.id);
+    const property = await TeePeeBuilding.findById(req.params.id);
     if (!property) return res.status(404).send('Property not found');
     res.send(property);
   } catch (err) {
@@ -26,7 +26,7 @@ router.get('/:id', async (req, res) => {
 // POST new
 router.post('/', async (req, res) => {
   try {
-    const property = new Property(req.body);
+    const property = new TeePeeBuilding(req.body);
     const saved = await property.save();
     res.send(saved);
   } catch (err) {
@@ -37,7 +37,7 @@ router.post('/', async (req, res) => {
 // PUT - update a whole property by id
 router.put('/:id', async (req, res) => {
   try {
-    const updated = await Property.findByIdAndUpdate(
+    const updated = await TeePeeBuilding.findByIdAndUpdate(
       req.params.id,
       req.body,
       { returnDocument: 'after', runValidators: true }
@@ -52,7 +52,7 @@ router.put('/:id', async (req, res) => {
 // DELETE by id
 router.delete('/:id', async (req, res) => {
   try {
-    const deleted = await Property.findByIdAndDelete(req.params.id);
+    const deleted = await TeePeeBuilding.findByIdAndDelete(req.params.id);
     if (!deleted) return res.status(404).send('Property not found');
     res.send(deleted);
   } catch (err) {

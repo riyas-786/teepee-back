@@ -4,14 +4,17 @@ require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
-const teePeeRouter = require('./routes/teePee');
+const authRouter = require('./routes/auth');
+const teePeeBuildings = require('./routes/teePeeBuildings');
 const blueBellsRouter = require('./routes/blueBells');
+
 
 const app = express();
 
 app.use(cors());
 app.use(express.json());
-app.use('/teepee', teePeeRouter);
+app.use('/api/auth',authRouter);
+app.use('/teePeeBuildings', teePeeBuildings);
 app.use('/blueBells',blueBellsRouter);
 
 mongoose.connect(process.env.MONGO_URI)
