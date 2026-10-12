@@ -3,16 +3,6 @@ const router = express.Router();
 const TeePeeBuilding = require('../models/TeePeeBuilding');
 const { verifyToken, requireAdmin } = require('../middleware/auth-middleware');
 
-// GET all
-// router.get('/', async (req, res) => {
-//   try {
-//     const properties = await TeePeeBuilding.find();
-//     res.send(properties);
-//   } catch (err) {
-//     res.status(500).send('Error fetching properties: ' + err.message);
-//   }
-// });
-// GET — admins get every building; staff only get their assigned ones.
 router.get('/', verifyToken, async (req, res) => {
   try {
     const docs = await TeePeeBuilding.find();
