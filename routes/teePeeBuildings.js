@@ -1,17 +1,36 @@
 const express = require('express');
 const router = express.Router();
 const TeePeeBuilding = require('../models/TeePeeBuilding');
+const { verifyToken, requireAdmin } = require('../middleware/auth-middleware');
 
 // GET all
-router.get('/', async (req, res) => {
+// router.get('/', async (req, res) => {
+//   try {
+//     const properties = await TeePeeBuilding.find();
+//     res.send(properties);
+//   } catch (err) {
+//     res.status(500).send('Error fetching properties: ' + err.message);
+//   }
+// });
+// GET — admins get every building; staff only get their assigned ones.
+router.get('/', verifyToken, async (req, res) => {
   try {
-    const properties = await TeePeeBuilding.find();
-    res.send(properties);
+    const docs = await TeePeeBuilding.find();
+    if (req.user.role === 'admin') {
+      return res.send(docs);
+    }
+
+    // Filter each document's building list down to the ones this staff
+    // member is assigned to.
+    const filtered = docs.map(doc => ({
+      ...doc.toObject(),
+      name: (doc.name || []).filter(b => req.user.assignedBuildings.includes(b.name)),
+    }));
+    res.send(filtered);
   } catch (err) {
     res.status(500).send('Error fetching properties: ' + err.message);
   }
 });
-
 // GET one by id
 router.get('/:id', async (req, res) => {
   try {
@@ -23,8 +42,19 @@ router.get('/:id', async (req, res) => {
   }
 });
 
+
 // POST new
-router.post('/', async (req, res) => {
+// router.post('/', async (req, res) => {
+//   try {
+//     const property = new TeePeeBuilding(req.body);
+//     const saved = await property.save();
+//     res.send(saved);
+//   } catch (err) {
+//     res.status(400).send('Error saving property: ' + err.message);
+//   }
+// });
+// POST — only admins can save/overwrite the building list.
+router.post('/', verifyToken, requireAdmin, async (req, res) => {
   try {
     const property = new TeePeeBuilding(req.body);
     const saved = await property.save();

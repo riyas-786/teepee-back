@@ -7,15 +7,19 @@ const cors = require('cors');
 const authRouter = require('./routes/auth');
 const teePeeBuildings = require('./routes/teePeeBuildings');
 const blueBellsRouter = require('./routes/blueBells');
+const usersRouter = require('./routes/users-router');
+const teePeeRouter = require('./routes/teePee');
 
 
 const app = express();
 
 app.use(cors());
 app.use(express.json());
-app.use('/api/auth',authRouter);
+app.use('/auth',authRouter);
 app.use('/teePeeBuildings', teePeeBuildings);
 app.use('/blueBells',blueBellsRouter);
+app.use('/users', usersRouter);
+app.use('/teePee', teePeeRouter)
 
 mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log('Connected to MongoDB...'))
