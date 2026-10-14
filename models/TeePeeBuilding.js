@@ -20,7 +20,7 @@
 const mongoose = require('mongoose');
 
 const roomSchema = new mongoose.Schema({
-  no: { type: Number, required: true },
+  no: { type: String, required: true, trim: true },
   status: {
     type: String,
     enum: ['vacant', 'occupied', 'reserved', 'maintenance'],
@@ -28,6 +28,10 @@ const roomSchema = new mongoose.Schema({
   },
   note: { type: String, default: '' },
   remark: { type: String, default: '' },
+  sqft: { type: Number, default: 0, min: 0 },
+  mergedFrom: { type: [mongoose.Schema.Types.Mixed], default: undefined },
+  partitionGroup: { type: String, default: undefined },
+  partitionOf: { type: mongoose.Schema.Types.Mixed, default: undefined },
 });
 
 const buildingSchema = new mongoose.Schema({
