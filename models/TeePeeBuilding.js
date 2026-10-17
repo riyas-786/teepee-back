@@ -32,6 +32,7 @@ const roomSchema = new mongoose.Schema({
   mergedFrom: { type: [mongoose.Schema.Types.Mixed], default: undefined },
   partitionGroup: { type: String, default: undefined },
   partitionOf: { type: mongoose.Schema.Types.Mixed, default: undefined },
+  rentPaidMonths: { type: [String], default: [] },
 });
 
 const buildingSchema = new mongoose.Schema({

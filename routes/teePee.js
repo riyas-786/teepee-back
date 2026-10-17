@@ -94,8 +94,12 @@ router.patch('/:id/rooms/:roomId', verifyToken, async (req, res) => {
     if (status !== undefined) room.status = status;
     if (note !== undefined) room.note = note;
     if (remark !== undefined) room.remark = remark;
-    if (sqft !== undefined) room.sqft = sqft;                // <-- added this line
-
+    if (sqft !== undefined) room.sqft = sqft;
+    if (rentPaidMonth !== undefined) {
+      if (rentPaidMonth !== '' && !/^\d{4}-(0[1-9]|1[0-2])$/.test(String(rentPaidMonth)))
+        return res.status(400).send('Month must look like 2026-10');
+      room.rentPaidMonth = rentPaidMonth;
+    }
     await building.save();
     res.send(room);
   } catch (err) {
@@ -219,6 +223,30 @@ router.post('/:id/rooms/:roomId/rejoin', verifyToken, async (req, res) => {
     res.send(building);
   } catch (err) {
     res.status(400).send('Error rejoining room: ' + err.message);
+  }
+});
+// PATCH mark one month as paid / unpaid for a room
+router.patch('/:id/rooms/:roomId/rent', verifyToken, async (req, res) => {
+  try {
+    const { month, paid } = req.body;
+    if (!/^\d{4}-(0[1-9]|1[0-2])$/.test(String(month)))
+      return res.status(400).send('Month must look like 2026-10');
+    if (typeof paid !== 'boolean') return res.status(400).send('paid must be true or false');
+
+    const building = await TeePeeBuilding.findById(req.params.id);
+    if (!building) return res.status(404).send('Building not found');
+    if (!canAccessBuilding(req.user, building)) return res.status(403).send('Not assigned to this building');
+    if (!building.rooms.id(req.params.roomId)) return res.status(404).send('Room not found');
+
+    // Atomic update, so fast ticks on different rooms never overwrite each other.
+    const op = paid
+      ? { $addToSet: { 'rooms.$.rentPaidMonths': month } }
+      : { $pull: { 'rooms.$.rentPaidMonths': month } };
+    await TeePeeBuilding.updateOne({ _id: req.params.id, 'rooms._id': req.params.roomId }, op);
+
+    res.send({ month, paid });
+  } catch (err) {
+    res.status(400).send('Error updating rent: ' + err.message);
   }
 });
 module.exports = router;
